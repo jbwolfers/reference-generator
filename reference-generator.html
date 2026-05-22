@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reference Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a18;
+    --ink-mid: #4a4a46;
+    --ink-light: #8a8a84;
+    --ink-faint: #c8c8c0;
+    --paper: #f7f6f1;
+    --paper-dark: #efede6;
+    --paper-darker: #e5e2d8;
+    --accent: #2d5a3d;
+    --accent-light: #e8f0ea;
+    --danger: #8b2020;
+    --danger-light: #f5eaea;
+    --warn-light: #f5f0e8;
+    --radius: 6px;
+    --radius-lg: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* Header */
+  .site-header {
+    border-bottom: 1px solid var(--ink-faint);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    background: var(--paper);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .site-title {
+    font-family: 'Lora', serif;
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .site-subtitle {
+    font-size: 12px;
+    color: var(--ink-light);
+  }
+
+  /* Layout */
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem 4rem;
+  }
+
+  .page-intro {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--ink-faint);
+  }
+  .page-intro h1 {
+    font-family: 'Lora', serif;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.3;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+  .page-intro p {
+    font-size: 14px;
+    color: var(--ink-mid);
+    line-height: 1.6;
+    max-width: 600px;
+  }
+
+  /* Cards */
+  .card {
+    background: white;
+    border: 1px solid var(--ink-faint);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .card-title {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 1rem;
+  }
+
+  /* Form elements */
+  label {
+    font-size: 13px;
+    color: var(--ink-mid);
+    display: block;
+    margin-bottom: 5px;
+  }
+  input[type=text], textarea, select {
+    width: 100%;
+    border: 1px solid var(--ink-faint);
+    border-radius: var(--radius);
+    padding: 9px 12px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    outline: none;
+    transition: border-color 0.15s;
+    appearance: none;
+  }
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--accent);
+    background: white;
+  }
+  textarea { resize: vertical; line-height: 1.6; }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a8a84' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+    cursor: pointer;
+  }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .field { margin-bottom: 0; }
+
+  /* Buttons */
+  .btn {
+    border: 1px solid var(--ink-faint);
+    border-radius: var(--radius);
+    background: white;
+    padding: 9px 18px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.12s;
+    white-space: nowrap;
+  }
+  .btn:hover { background: var(--paper); border-color: var(--ink-mid); }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    margin-top: 4px;
+  }
+  .btn-primary:hover { background: #224530; border-color: #224530; }
+
+  /* Progress */
+  .progress-wrap { margin-top: 12px; display: none; }
+  .progress-label { font-size: 12px; color: var(--ink-light); margin-bottom: 6px; }
+  .progress-bar { height: 2px; background: var(--ink-faint); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.25s; }
+
+  /* Output */
+  .output-section { display: none; margin-top: 1.5rem; }
+
+  .attn-bar {
+    background: var(--warn-light);
+    border: 1px solid #d4c4a0;
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #7a6020;
+    margin-bottom: 12px;
+    display: none;
+  }
+
+  .out-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .out-count { font-size: 13px; color: var(--ink-mid); }
+
+  .view-tabs {
+    display: flex;
+    border: 1px solid var(--ink-faint);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--paper);
+  }
+  .vtab {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--ink-light);
+    font-family: 'DM Sans', sans-serif;
+    border-right: 1px solid var(--ink-faint);
+    transition: all 0.1s;
+  }
+  .vtab:last-child { border-right: none; }
+  .vtab.active { background: white; color: var(--ink); }
+
+  .out-actions { display: flex; gap: 8px; align-items: center; }
+
+  .output-box {
+    background: white;
+    border: 1px solid var(--ink-faint);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.5rem;
+  }
+
+  .ref-row {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--paper-darker);
+    font-size: 14px;
+    line-height: 1.8;
+    word-break: break-word;
+  }
+  .ref-row:last-child { border-bottom: none; }
+  .ref-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-faint);
+    min-width: 28px;
+    padding-top: 4px;
+    flex-shrink: 0;
+  }
+  .ref-body { flex: 1; }
+  .missing { color: var(--danger); font-weight: 500; }
+  .ref-type {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 1px 7px;
+    border-radius: 20px;
+    margin-left: 8px;
+    vertical-align: middle;
+    letter-spacing: 0.03em;
+  }
+  .type-doi { background: #e8f0ea; color: #2d5a3d; }
+  .type-book { background: #e8eef5; color: #1e4070; }
+  .type-web { background: var(--warn-light); color: #7a6020; }
+  .type-err { background: var(--danger-light); color: var(--danger); }
+
+  .plain-textarea {
+    width: 100%;
+    min-height: 200px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.9;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--ink);
+    resize: vertical;
+    padding: 0;
+  }
+
+  .edit-hint {
+    font-size: 12px;
+    color: var(--ink-light);
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--paper-darker);
+  }
+  .edit-hint strong { color: var(--danger); font-weight: 500; }
+
+  /* Trove note */
+  .trove-note {
+    font-size: 11px;
+    color: var(--ink-light);
+    margin-top: 5px;
+    line-height: 1.5;
+  }
+  .trove-note a { color: var(--accent); text-decoration: none; }
+  .trove-note a:hover { text-decoration: underline; }
+
+  /* Footer */
+  .site-footer {
+    border-top: 1px solid var(--ink-faint);
+    padding: 1.5rem 2rem;
+    font-size: 12px;
+    color: var(--ink-light);
+    text-align: center;
+    margin-top: 2rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .grid2, .grid3 { grid-template-columns: 1fr; }
+    .container { padding: 1.5rem 1rem 3rem; }
+    .site-header { padding: 0 1rem; }
+    .out-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <span class="site-title">Reference Generator</span>
+  <span class="site-subtitle">Paste links · get references</span>
+</header>
+
+<div class="container">
+
+  <div class="page-intro">
+    <h1>Generate your reference list</h1>
+    <p>Paste DOI links, Amazon book URLs, ISBN-13s, or website URLs — one per line. The tool looks up metadata automatically and formats a reference list ready to copy.</p>
+  </div>
+
+  <!-- Settings -->
+  <div class="card">
+    <div class="card-title">Settings</div>
+    <div class="grid3" style="margin-bottom:12px;">
+      <div class="field">
+        <label>Reference style</label>
+        <select id="style-select">
+          <option value="harvard">Harvard</option>
+          <option value="apa">APA 7th</option>
+          <option value="chicago">Chicago</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Author name format</label>
+        <select id="author-fmt">
+          <option value="last-initial">Last, F.</option>
+          <option value="last-full">Last, First</option>
+          <option value="full">First Last</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Numbering</label>
+        <select id="numbering">
+          <option value="numbered">Numbered [1], [2]…</option>
+          <option value="none">No numbers</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Trove API key <span style="font-weight:300;color:var(--ink-light);">— optional, improves Australian book lookup</span></label>
+      <input type="text" id="trove-key" placeholder="Paste your free Trove API key here" />
+      <div class="trove-note">Get a free key at <a href="https://trove.nla.gov.au/about/create-something/using-api" target="_blank">trove.nla.gov.au</a> · Note: Trove works best via the Google Sheets version due to browser security restrictions.</div>
+    </div>
+  </div>
+
+  <!-- Input -->
+  <div class="card">
+    <div class="card-title">Your links</div>
+    <div class="field" style="margin-bottom:12px;">
+      <label>One link per line — DOI URLs, Amazon book URLs, ISBN-13s, or website URLs</label>
+      <textarea id="link-input" rows="8" placeholder="https://doi.org/10.1016/j.teler.2024.100127&#10;https://www.amazon.com.au/Asia-Love-Hetty-McKinnon/dp/1760787671&#10;9781760787677&#10;https://www.who.int/news-room/fact-sheets/detail/cancer"></textarea>
+    </div>
+    <button class="btn btn-primary" onclick="generateRefs()">Generate reference list</button>
+    <div class="progress-wrap" id="prog-wrap">
+      <div class="progress-label" id="prog-label">Looking up…</div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <!-- Output -->
+  <div class="output-section" id="out-section">
+    <div class="attn-bar" id="attn-bar">
+      ⚠ <span id="attn-msg"></span> — fields marked <span class="missing">XXXX[...]</span> need manual completion. Switch to Edit &amp; copy to fix them.
+    </div>
+
+    <div class="out-header">
+      <span class="out-count" id="out-count"></span>
+      <div class="out-actions">
+        <div class="view-tabs">
+          <button class="vtab active" onclick="switchView('fmt')">Formatted</button>
+          <button class="vtab" onclick="switchView('edit')">Edit &amp; copy</button>
+        </div>
+        <button class="btn" onclick="copyAll()" id="copy-btn">Copy all</button>
+      </div>
+    </div>
+
+    <div id="view-fmt" class="output-box">
+      <div id="fmt-list"></div>
+    </div>
+
+    <div id="view-edit" style="display:none;" class="output-box">
+      <div class="edit-hint">Find and replace <strong>XXXX</strong> with the correct values, then copy.</div>
+      <textarea class="plain-textarea" id="plain-out" spellcheck="true"></textarea>
+    </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  Metadata sourced from CrossRef, Open Library, and Trove (NLA). Always verify references before submission.
+</footer>
+
+<script>
+// ── Helpers ───────────────────────────────────────────────────────────────
+const M  = l => `<span class="missing">XXXX[${l}]</span>`;
+const Mx = l => `XXXX[${l}]`;
+const countX = s => (s.match(/XXXX/g)||[]).length;
+
+function fmtAuthorName(name, fmt) {
+  name = (name||'').replace(/\.$/, '').trim();
+  let last, first;
+  if (name.includes(',')) {
+    const parts = name.split(',');
+    last  = parts[0].trim();
+    first = parts.slice(1).join(',').trim();
+  } else {
+    const parts = name.trim().split(' ');
+    last  = parts[parts.length - 1];
+    first = parts.slice(0, -1).join(' ');
+  }
+  if (fmt === 'last-initial') return last + (first ? ', ' + first[0] + '.' : '');
+  if (fmt === 'last-full')    return last + (first ? ', ' + first : '');
+  return (first ? first + ' ' : '') + last;
+}
+
+function authorStr(authors, fmt, style, plain) {
+  if (!authors || !authors.length) return plain ? Mx('author') : M('author');
+  const fmtd = authors.map(a => fmtAuthorName(a, fmt)).filter(Boolean);
+  if (!fmtd.length) return plain ? Mx('author') : M('author');
+  if (style === 'apa' || style === 'harvard') {
+    if (fmtd.length === 1) return fmtd[0];
+    if (fmtd.length === 2) return fmtd.join(' & ');
+    return fmtd.slice(0, -1).join(', ') + ' & ' + fmtd[fmtd.length - 1];
+  }
+  if (style === 'mla' && fmtd.length > 2) return fmtd[0] + ', et al.';
+  return fmtd.join('; ');
+}
+
+function val(v, label, plain) {
+  return (v && String(v).trim()) ? String(v).trim() : (plain ? Mx(label) : M(label));
+}
+
+// ── Reference formatters ──────────────────────────────────────────────────
+function buildDOIRef(r, style, fmt, plain) {
+  const a       = authorStr(r.authors || [], fmt, style, plain);
+  const year    = val(r.year, 'year', plain);
+  const title   = val(r.title, 'title', plain);
+  const journal = val(r.journal, 'journal', plain);
+  const vol     = r.volume ? `Volume ${r.volume}` : '';
+  const pages   = r.pages || '';
+  const doiUrl  = `https://doi.org/${r.doi}`;
+  if (style === 'apa') {
+    const vi = r.volume ? `${r.volume}${r.issue ? `(${r.issue})` : ''}` : '';
+    return `${a} (${year}). ${title}. ${journal}${vi ? `, ${vi}` : ''}${pages ? `, ${pages}` : ''}. ${doiUrl}`;
+  }
+  if (style === 'chicago') {
+    const vi = [r.volume ? `vol. ${r.volume}` : '', r.issue ? `no. ${r.issue}` : ''].filter(Boolean).join(', ');
+    return `${a}. "${title}." ${journal}${vi ? `, ${vi}` : ''} (${year})${pages ? `: ${pages}` : ''}. ${doiUrl}`;
+  }
+  return `${a} ${year}, '${title}', ${journal}${vol ? `, ${vol}` : ''}${pages ? `, ${pages}` : ''}, <${doiUrl}>`;
+}
+
+function buildBookRef(r, style, fmt, plain) {
+  const a   = authorStr(r.authors || [], fmt, style, plain);
+  const year = val(r.year, 'year', plain);
+  const title = val(r.title, 'title', plain);
+  const pub   = val(r.publisher, 'publisher', plain);
+  const place = val(r.place, 'place', plain);
+  if (style === 'apa')     return `${a} (${year}). ${title}. ${pub}.`;
+  if (style === 'chicago') return `${a}. ${title}. ${place}: ${pub}, ${year}.`;
+  return `${a} ${year}, ${title}, ${pub}, ${place}.`;
+}
+
+function buildWebRef(r, style, fmt, plain) {
+  const a       = val(r.author, 'author/org', plain);
+  const year    = val(r.year, 'year', plain);
+  const title   = val(r.title, 'page title', plain);
+  const site    = val(r.site, 'website name', plain);
+  const url     = r.url || '';
+  const accessed = r.accessed || new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' });
+  if (style === 'apa')     return `${a} (${year}). ${title}. ${site}. ${url}`;
+  if (style === 'chicago') return `${a}. "${title}." ${site}. ${url} (accessed ${accessed}).`;
+  return `${a} (${year}). '${title}', ${site}. <${url}>. [Accessed ${accessed}]`;
+}
+
+// ── API lookups ───────────────────────────────────────────────────────────
+async function fetchDOI(raw) {
+  const doi = raw.replace(/^https?:\/\/doi\.org\//i, '').replace(/^doi:/i, '').trim();
+  const res = await fetch(`https://api.crossref.org/works/${encodeURIComponent(doi)}`);
+  if (!res.ok) throw new Error('CrossRef lookup failed');
+  const d = (await res.json()).message;
+  return {
+    type: 'doi',
+    authors: (d.author || []).map(a => a.family + (a.given ? ', ' + a.given : '')),
+    year: d.published?.['date-parts']?.[0]?.[0] || '',
+    title: (d.title || [])[0] || '',
+    journal: (d['container-title'] || [])[0] || '',
+    volume: d.volume || '', issue: d.issue || '',
+    pages: d.page || d['article-number'] || '',
+    doi: d.DOI || doi
+  };
+}
+
+async function fetchOLBooks(isbn) {
+  try {
+    const res = await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`);
+    const d = await res.json();
+    return d[`ISBN:${isbn}`] || null;
+  } catch(e) { return null; }
+}
+
+async function fetchOLSearch(isbn) {
+  try {
+    const res = await fetch(`https://openlibrary.org/search.json?isbn=${isbn}&limit=1`);
+    const d = await res.json();
+    return (d.docs && d.docs.length) ? d.docs[0] : null;
+  } catch(e) { return null; }
+}
+
+async function fetchTrove(isbn, apiKey) {
+  if (!apiKey) return null;
+  try {
+    const url = `https://api.trove.nla.gov.au/v3/result?q=isbn:${isbn}&category=book&encoding=json&key=${apiKey}`;
+    const res = await fetch(url);
+    const d = await res.json();
+    const works = d.category?.[0]?.records?.work;
+    return (works && works.length) ? works[0] : null;
+  } catch(e) { return null; }
+}
+
+function isbn10to13(isbn10) {
+  const base = '978' + isbn10.slice(0, 9);
+  let sum = 0;
+  for (let i = 0; i < 12; i++) sum += parseInt(base[i]) * (i % 2 === 0 ? 1 : 3);
+  return base + String((10 - (sum % 10)) % 10);
+}
+
+async function resolveBook(isbn, apiKey) {
+  const [info, search, trove] = await Promise.all([
+    fetchOLBooks(isbn), fetchOLSearch(isbn), fetchTrove(isbn, apiKey)
+  ]);
+  let authors = [], year = '', title = '', publisher = '', place = '';
+
+  if      (info?.authors?.length)        authors = info.authors.map(a => a.name);
+  else if (search?.author_name?.length)  authors = search.author_name;
+  else if (trove?.contributor?.length)   authors = trove.contributor;
+
+  if      (info?.publish_date)                      year = info.publish_date.replace(/.*(\d{4}).*/, '$1');
+  else if (search?.publish_year?.length)            year = String(Math.min(...search.publish_year));
+  else if (search?.first_publish_year)              year = String(search.first_publish_year);
+  else if (trove?.issued)                           year = String(trove.issued).replace(/.*(\d{4}).*/, '$1');
+
+  if      (info?.title)        title = info.title;
+  else if (search?.title)      title = search.title;
+  else if (trove?.title)       title = trove.title.replace(/\s*\/.*$/, '').trim();
+
+  if      (info?.publishers?.[0])         publisher = info.publishers[0].name;
+  else if (search?.publisher?.[0])        publisher = search.publisher[0];
+  else if (trove?.publisher)              publisher = trove.publisher;
+
+  if      (info?.publish_places?.[0])     place = info.publish_places[0].name;
+  else if (search?.publish_place?.[0])    place = search.publish_place[0];
+  else if (trove?.placeOfPublication)     place = trove.placeOfPublication;
+
+  return { type: 'book', authors, year, title, publisher, place };
+}
+
+async function tryWebMeta(url) {
+  try {
+    const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+    if (!res.ok) throw new Error();
+    const html = await res.text();
+    const doc  = new DOMParser().parseFromString(html, 'text/html');
+    const g = (...names) => {
+      for (const n of names) {
+        const el = doc.querySelector(`meta[property="${n}"],meta[name="${n}"]`);
+        if (el?.content) return el.content;
+      }
+      return '';
+    };
+    return {
+      title:  g('og:title', 'twitter:title') || doc.title || '',
+      author: g('author', 'article:author') || '',
+      site:   g('og:site_name') || new URL(url).hostname.replace(/^www\./, ''),
+      year:   (g('article:published_time', 'datePublished') || '').split('-')[0] || ''
+    };
+  } catch(e) { return null; }
+}
+
+// ── Detection ─────────────────────────────────────────────────────────────
+const isDOI     = s => /doi\.org/i.test(s) || /^doi:/i.test(s) || /^10\.\d{4,}/.test(s.trim());
+const isAmazon  = s => /amazon\.(com|co\.uk|com\.au|ca|de|fr|it|es|co\.jp)/i.test(s);
+const isISBN13  = s => /^978\d{10}$/.test(s.trim());
+
+// ── Main ──────────────────────────────────────────────────────────────────
+async function generateRefs() {
+  const raw = document.getElementById('link-input').value.trim();
+  if (!raw) return;
+  const lines    = raw.split('\n').map(l => l.trim()).filter(Boolean);
+  const style    = document.getElementById('style-select').value;
+  const fmt      = document.getElementById('author-fmt').value;
+  const numbering = document.getElementById('numbering').value;
+  const troveKey = document.getElementById('trove-key').value.trim();
+
+  let results = new Array(lines.length).fill(null);
+  document.getElementById('out-section').style.display = 'none';
+  document.getElementById('prog-wrap').style.display   = 'block';
+  document.getElementById('prog-fill').style.width     = '0%';
+
+  let done = 0;
+  const tick = () => {
+    done++;
+    document.getElementById('prog-fill').style.width   = Math.round(done / lines.length * 100) + '%';
+    document.getElementById('prog-label').textContent  = `Looking up ${done} of ${lines.length}…`;
+  };
+
+  await Promise.all(lines.map(async (line, i) => {
+    try {
+      if (isDOI(line)) {
+        results[i] = await fetchDOI(line);
+      } else if (isISBN13(line)) {
+        results[i] = await resolveBook(line.trim(), troveKey);
+      } else if (isAmazon(line)) {
+        const m = line.match(/\/(?:dp|gp\/product)\/([A-Z0-9]{10})/i);
+        if (!m) { results[i] = { type: 'error', raw: line, err: 'Could not extract ISBN from Amazon URL' }; tick(); return; }
+        const asin = m[1];
+        let r = await resolveBook(asin, troveKey);
+        if (asin.match(/^\d+$/)) {
+          const r13 = await resolveBook(isbn10to13(asin), troveKey);
+          if (countX(buildBookRef(r13, style, fmt, true)) < countX(buildBookRef(r, style, fmt, true))) r = r13;
+        }
+        results[i] = r;
+      } else if (line.startsWith('http')) {
+        const meta = await tryWebMeta(line);
+        results[i] = {
+          type: 'web',
+          author: meta?.author || '', year: meta?.year || '',
+          title: meta?.title || '', site: meta?.site || '',
+          url: line,
+          accessed: new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })
+        };
+      } else {
+        results[i] = { type: 'error', raw: line, err: 'Unrecognised format — try a full URL or ISBN-13' };
+      }
+    } catch(e) {
+      results[i] = { type: 'error', raw: line, err: e.message };
+    }
+    tick();
+  }));
+
+  document.getElementById('prog-wrap').style.display = 'none';
+  renderOutput(results, style, fmt, numbering);
+}
+
+function renderOutput(results, style, fmt, numbering) {
+  const numbered = numbering === 'numbered';
+  let totalX = 0;
+
+  const fmtParts = results.map((r, i) => {
+    const num = numbered ? `<span class="ref-num">[${i+1}]</span>` : '';
+    if (!r || r.type === 'error') {
+      return `<div class="ref-row">${num}<span class="ref-body" style="color:var(--danger);font-size:13px;">⚠ ${r?.err || 'Error'}: <span style="color:var(--ink-light)">${r?.raw || ''}</span></span></div>`;
+    }
+    let html = '', badge = '';
+    if (r.type === 'doi')  { html = buildDOIRef(r, style, fmt, false);  badge = '<span class="ref-type type-doi">Journal</span>'; }
+    if (r.type === 'book') { html = buildBookRef(r, style, fmt, false); badge = '<span class="ref-type type-book">Book</span>'; }
+    if (r.type === 'web')  { html = buildWebRef(r, style, fmt, false);  badge = '<span class="ref-type type-web">Website</span>'; }
+    const plain = r.type === 'doi' ? buildDOIRef(r, style, fmt, true) : r.type === 'book' ? buildBookRef(r, style, fmt, true) : buildWebRef(r, style, fmt, true);
+    totalX += countX(plain);
+    return `<div class="ref-row">${num}<span class="ref-body">${html}${badge}</span></div>`;
+  });
+
+  document.getElementById('fmt-list').innerHTML = fmtParts.join('');
+
+  const plainLines = results.map((r, i) => {
+    const pre = numbered ? `[${i+1}] ` : '';
+    if (!r || r.type === 'error') return pre + `[Error: ${r?.raw || ''}]`;
+    if (r.type === 'doi')  return pre + buildDOIRef(r, style, fmt, true);
+    if (r.type === 'book') return pre + buildBookRef(r, style, fmt, true);
+    return pre + buildWebRef(r, style, fmt, true);
+  });
+  document.getElementById('plain-out').value = plainLines.join('\n\n');
+
+  const attn = document.getElementById('attn-bar');
+  if (totalX > 0) {
+    attn.style.display = 'block';
+    document.getElementById('attn-msg').textContent = `${totalX} field${totalX !== 1 ? 's' : ''} could not be auto-filled`;
+  } else {
+    attn.style.display = 'none';
+  }
+
+  document.getElementById('out-count').textContent = `${results.filter(r => r && r.type !== 'error').length} of ${results.length} reference${results.length !== 1 ? 's' : ''} resolved`;
+  document.getElementById('out-section').style.display = 'block';
+}
+
+function switchView(v) {
+  document.querySelectorAll('.vtab').forEach((t, i) => t.classList.toggle('active', ['fmt','edit'][i] === v));
+  document.getElementById('view-fmt').style.display  = v === 'fmt'  ? 'block' : 'none';
+  document.getElementById('view-edit').style.display = v === 'edit' ? 'block' : 'none';
+}
+
+function copyAll() {
+  const text = document.getElementById('plain-out').value;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy all', 1800);
+  });
+}
+</script>
+
+</body>
+</html>
